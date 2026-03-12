@@ -19,6 +19,7 @@ module.exports = {
   refresh: {
     timeoutMs: parseInt(process.env.REFRESH_TIMEOUT_MS || '120000', 10),
     maxScrapeConcurrent: parseInt(process.env.MAX_SCRAPE_CONCURRENT || '3', 10),
+    minEventDate: process.env.AUTO_EVENT_MIN_DATE || '2024-01-01',
   },
   rateLimits: {
     yahooPerMin: parseInt(process.env.YAHOO_REQUESTS_PER_MIN || '30', 10),

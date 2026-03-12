@@ -2,6 +2,32 @@
  * Formatting utilities for financial data display.
  */
 
+const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Parse a date-like input without shifting plain YYYY-MM-DD values across
+ * timezones.
+ *
+ * JavaScript treats `new Date('2026-03-12')` as UTC midnight, which renders as
+ * the prior calendar day in US timezones. For dashboard event dates we want the
+ * stored calendar date, not a timezone-adjusted instant.
+ *
+ * @param {Date|string} value
+ * @returns {Date|null}
+ */
+function parseDisplayDate(value) {
+  if (!value) return null;
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+
+  if (DATE_ONLY_RE.test(value)) {
+    const [year, month, day] = value.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
 /**
  * Format a number as currency with appropriate suffix.
  * @param {number} value
@@ -41,8 +67,24 @@ export function fmtB(val) {
  */
 export function fmtDate(isoDate) {
   if (!isoDate) return '—';
-  return new Date(isoDate).toLocaleDateString('en-US', {
+  const parsed = parseDisplayDate(isoDate);
+  if (!parsed) return '—';
+  return parsed.toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
+  });
+}
+
+/**
+ * Format an ISO date string as a compact chart tick label.
+ * @param {string} isoDate
+ * @returns {string}
+ */
+export function fmtShortDate(isoDate) {
+  if (!isoDate) return '—';
+  const parsed = parseDisplayDate(isoDate);
+  if (!parsed) return '—';
+  return parsed.toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric',
   });
 }
 
@@ -53,7 +95,9 @@ export function fmtDate(isoDate) {
  */
 export function timeAgo(date) {
   if (!date) return 'never';
-  const ms = Date.now() - new Date(date).getTime();
+  const parsed = parseDisplayDate(date);
+  if (!parsed) return 'never';
+  const ms = Date.now() - parsed.getTime();
   const sec = Math.floor(ms / 1000);
   if (sec < 60) return `${sec}s ago`;
   const min = Math.floor(sec / 60);

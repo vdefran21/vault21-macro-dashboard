@@ -13,7 +13,7 @@
 |-------|------|------|--------|---------|-----------|
 | 1 | Foundation (Backend + Database) | [PHASE_1](./phases/PHASE_1_FOUNDATION.md) | COMPLETE | 2026-03-12 | 2026-03-12 |
 | 2 | Frontend Migration | [PHASE_2](./phases/PHASE_2_FRONTEND.md) | COMPLETE | 2026-03-12 | 2026-03-12 |
-| 3 | Data Collection Pipeline | [PHASE_3](./phases/PHASE_3_PIPELINE.md) | NOT STARTED | — | — |
+| 3 | Data Collection Pipeline | [PHASE_3](./phases/PHASE_3_PIPELINE.md) | IN PROGRESS | 2026-03-12 | — |
 | 4 | Scheduler + Process Management | [PHASE_4](./phases/PHASE_4_SCHEDULER.md) | NOT STARTED | — | — |
 | 5 | Manual Data Entry + Event Management | [PHASE_5](./phases/PHASE_5_MANUAL_ENTRY.md) | NOT STARTED | — | — |
 | 6 | Alerting + Monitoring (Optional) | [PHASE_6](./phases/PHASE_6_ALERTING.md) | NOT STARTED | — | — |
@@ -135,20 +135,20 @@ client/
 
 ---
 
-## Phase 3: Data Collection Pipeline — NOT STARTED
+## Phase 3: Data Collection Pipeline — IN PROGRESS
 
 Ref: [PHASE_3_PIPELINE.md](./phases/PHASE_3_PIPELINE.md)
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 1 | Yahoo Finance scraper (equity prices) | — | Tickers: OWL, BX, KKR, ARES, BLK, APO, GLD, SPY, BTC-USD |
-| 2 | FRED API client (macro indicators) | — | Series: VIXCLS, DGS10, BAMLH0A0HYM2 |
-| 3 | SEC EDGAR scraper (BDC filings) | — | 8-K filings, redemption disclosures |
-| 4 | News scraper framework | — | Google News RSS, Cheerio extraction, deduplication |
-| 5 | Claude extraction service | — | Anthropic API structured extraction |
-| 6 | `refreshPipeline.js` orchestrator | — | Promise.allSettled, scoped refresh, error isolation |
-| 7 | Wire up `POST /api/refresh` endpoint | — | |
-| 8 | Test: manual refresh pulls real data | — | |
+| 1 | Yahoo Finance scraper (equity prices) | DONE | `server/services/scrapers/yahoo.js`, `server/utils/rateLimiter.js`, `server/utils/dateUtils.js`; fetches OWL, BX, KKR, ARES, BLK, APO, GLD, SPY, BTC-USD and upserts latest daily snapshot into `equity_prices` with per-ticker error isolation |
+| 2 | FRED API client (macro indicators) | DONE | `server/services/scrapers/fred.js`; pulls VIXCLS, DGS10, BAMLH0A0HYM2, TOTRESNS and writes latest observations to `metrics`; cleanly skips when `FRED_API_KEY` is missing |
+| 3 | SEC EDGAR scraper (BDC filings) | DONE | `server/services/scrapers/sec.js`; queries SEC full-text search for 8-K private-credit redemption disclosures and inserts deduped auto-generated timeline events for manual review |
+| 4 | News scraper framework | IN PROGRESS | `server/services/scrapers/news.js`, `bloomberg.js`, `cnbc.js`, `reuters.js`, `server/services/ingestion/store.js`; Google News RSS collection, snippet parsing via Cheerio, fuzzy event dedupe, structured ingestion. Current limitation: canonical article URLs are not reliably exposed by Google RSS, so extraction presently uses headlines + snippets when full article text is unavailable |
+| 5 | Claude extraction service | DONE | `server/services/enrichment/claudeExtractor.js`; Anthropic structured extraction prompt implemented for events, metrics, and fund-profile enrichment. Requires `ANTHROPIC_API_KEY` |
+| 6 | `refreshPipeline.js` orchestrator | DONE | `server/services/refreshPipeline.js`; `Promise.allSettled`, `full|prices_only|news_only` scopes, timeout guard, refresh-complete emitter, refresh-log writes, and source-level isolation across Yahoo/FRED/SEC/Bloomberg/CNBC/Reuters |
+| 7 | Wire up `POST /api/refresh` endpoint | DONE | `server/routes/refresh.js`, `server/index.js`, `client/src/hooks/useDashboardData.js`; manual refresh button now triggers backend pipeline before re-fetching dashboard data |
+| 8 | Test: manual refresh pulls real data | IN PROGRESS | Verification complete: `npm run check:types`, `node --check` on new server/client boundary files, `npm --prefix client run build`, direct SEC search probe, direct Google News RSS probe. Full end-to-end `POST /api/refresh` was not executed in-session because the app was not started and live enrichment may require API keys |
 
 ---
 
@@ -217,7 +217,10 @@ Cross-ref: [PHASE_1_FOUNDATION.md](./phases/PHASE_1_FOUNDATION.md) → Seed Data
 
 - **Barclays/Goldman exposure figures** are estimates based on proportional reporting (noted in README)
 - **Alt manager drawdowns** (BX -40%, KKR -35%) are directional — will be replaced with live data in Phase 3
-- **Schema includes `refresh_log` table** but refresh pipeline not yet built (Phase 3)
+- **Google News RSS does not reliably expose canonical article URLs** in a directly fetchable form, so the current news pipeline extracts from headlines/snippets when it cannot recover full article text
+- **Auto-generated event history is now bounded** by `AUTO_EVENT_MIN_DATE` (default `2024-01-01`) to keep the timeline focused on the current crisis window and prevent SEC/news backfill from polluting the chart
+- **Fund-profile enrichment is currently conservative**: extracted fund data updates/creates rows in `funds`, but does not yet write new `redemption_events` because the current prompt does not include enough paid-vs-requested detail for chart-safe inserts
+- **`GET /api/refresh/status` remains a Phase 4 task** so the frontend currently waits for `POST /api/refresh` to finish rather than polling a separate status endpoint
 - **Graceful shutdown** partially implemented in Phase 1; full PM2 integration deferred to Phase 4
 - **Plan specified `claude-sonnet-4-20250514`** as default model — set in `.env`
 
@@ -238,3 +241,9 @@ Cross-ref: [PHASE_1_FOUNDATION.md](./phases/PHASE_1_FOUNDATION.md) → Seed Data
 | 2026-03-12 | RedemptionRateChart Cell coloring changed from hardcoded index to data-driven (based on requested rate vs gate) | 2 |
 | 2026-03-12 | Status taxonomy expanded: added `extraordinary` status for funds that met requests via unsustainable emergency measures (e.g., BCRED $400M backstop). Updated StatusBadge, seed data, ARCHITECTURE.md | 1,2 |
 | 2026-03-12 | Dev workflow fix: `npm run dev` now starts both Express (:3001) + Vite (:5173) via `concurrently`. Express no longer serves `client/dist` in dev mode — prevents stale builds from masking frontend changes. Added `concurrently` devDep. Updated CLAUDE.md dev commands. | 1,2 |
+| 2026-03-12 | Added root `AGENTS.md` that points agents to `CLAUDE.md` as the source of truth and restates the critical operating constraints and tracking requirements. | — |
+| 2026-03-12 | Phase 3 started: added Yahoo Finance + FRED collectors, refresh pipeline orchestration, `POST /api/refresh`, and frontend manual refresh wiring. Contagion equity query now selects the latest row per tracked alt-manager ticker so historical refreshes do not duplicate the chart. | 3 |
+| 2026-03-12 | Added shared JSDoc API contracts (`shared/contracts.js`) plus incremental `tsc --checkJs` scripts/configs for the dashboard + refresh boundary. | 3 |
+| 2026-03-12 | Phase 3 continued: implemented SEC EDGAR ingestion, Google News RSS source collectors (Bloomberg/CNBC/Reuters), Claude extraction service, and a deduping ingestion store for auto-generated events/metrics/fund profile updates. | 3 |
+| 2026-03-12 | Added `AUTO_EVENT_MIN_DATE` (default `2024-01-01`), filtered SEC/news event ingestion to that window, added louder manual refresh/source logging, and removed already-ingested pre-2024 auto-generated timeline rows from the local SQLite DB. | 3 |
+| 2026-03-12 | Fixed date-only timezone drift in the timeline UI by parsing `YYYY-MM-DD` as a calendar date instead of UTC midnight. Event log and severity chart now render matching dates. | 2,3 |

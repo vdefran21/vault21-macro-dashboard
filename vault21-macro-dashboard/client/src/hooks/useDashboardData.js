@@ -1,30 +1,36 @@
+// @ts-check
+
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { get } from '../lib/api';
+import { get, post } from '../lib/api';
 import { AUTO_REFRESH_INTERVAL } from '../lib/constants';
+
+/** @typedef {import('../../../shared/contracts.js').DashboardDataHookResult} DashboardDataHookResult */
+/** @typedef {import('../../../shared/contracts.js').DashboardPayload} DashboardPayload */
+/** @typedef {import('../../../shared/contracts.js').RefreshSummary} RefreshSummary */
 
 /**
  * Primary data hook for the dashboard.
  * Fetches the full payload from /api/dashboard, auto-refreshes on interval,
  * and exposes a manual refresh trigger.
  *
- * @returns {{ data: Object|null, loading: boolean, refreshing: boolean, lastRefresh: Date|null, error: string|null, triggerRefresh: Function }}
+ * @returns {DashboardDataHookResult}
  */
 export function useDashboardData() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(/** @type {DashboardPayload|null} */ (null));
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [lastRefresh, setLastRefresh] = useState(null);
-  const [error, setError] = useState(null);
-  const intervalRef = useRef(null);
+  const [lastRefresh, setLastRefresh] = useState(/** @type {Date|null} */ (null));
+  const [error, setError] = useState(/** @type {string|null} */ (null));
+  const intervalRef = useRef(/** @type {ReturnType<typeof setInterval>|null} */ (null));
 
   const fetchData = useCallback(async () => {
     try {
-      const response = await get('/dashboard');
+      const response = /** @type {DashboardPayload} */ (await get('/dashboard'));
       setData(response);
-      setLastRefresh(new Date());
+      setLastRefresh(response.meta?.last_refresh ? new Date(response.meta.last_refresh) : new Date());
       setError(null);
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
@@ -34,7 +40,11 @@ export function useDashboardData() {
   const triggerRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
+      /** @type {RefreshSummary} */
+      const _summary = await post('/refresh', { scope: 'full' });
       await fetchData();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setRefreshing(false);
     }
@@ -44,7 +54,11 @@ export function useDashboardData() {
   useEffect(() => {
     fetchData();
     intervalRef.current = setInterval(fetchData, AUTO_REFRESH_INTERVAL);
-    return () => clearInterval(intervalRef.current);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, [fetchData]);
 
   return { data, loading, refreshing, lastRefresh, error, triggerRefresh };

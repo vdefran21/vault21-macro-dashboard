@@ -57,9 +57,13 @@ Prototype: [../private_credit_crisis_dashboard.jsx](../../private_credit_crisis_
 ```
 vault21-macro-dashboard/
 ├── package.json
+├── shared/
+│   └── contracts.js             # Shared JSDoc API contracts for checkJs
 ├── .env                          # API keys, config (gitignored)
 ├── .env.example                  # Template for env vars
 ├── pm2.ecosystem.config.js       # PM2 process configuration (Phase 4)
+├── tsconfig.typecheck.server.json # Incremental server-side JS type checking
+├── tsconfig.typecheck.client.json # Incremental client-side JS type checking
 │
 ├── docs/
 │   ├── ARCHITECTURE.md           # This file
@@ -100,6 +104,8 @@ vault21-macro-dashboard/
 │   │   ├── enrichment/           # (Phase 3)
 │   │   │   ├── claudeExtractor.js
 │   │   │   └── eventClassifier.js
+│   │   ├── ingestion/            # (Phase 3)
+│   │   │   └── store.js          # Deduping + persistence for extracted events/metrics
 │   │   └── notifications/        # (Phase 6)
 │   │       └── alertEngine.js
 │   └── utils/

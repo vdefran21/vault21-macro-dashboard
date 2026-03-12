@@ -25,6 +25,7 @@ initSchema();
 
 // Routes
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/refresh', require('./routes/refresh'));
 app.use('/api/health', require('./routes/health'));
 
 // Serve the built frontend only outside development.
@@ -100,6 +101,7 @@ app.get('/', (req, res) => {
     <li><span class="method">GET</span><a class="path" href="/api/dashboard/redemptions">/api/dashboard/redemptions</a><span class="desc">Fund scorecard, flows</span></li>
     <li><span class="method">GET</span><a class="path" href="/api/dashboard/contagion">/api/dashboard/contagion</a><span class="desc">Chain, banks, equities</span></li>
     <li><span class="method">GET</span><a class="path" href="/api/dashboard/timeline">/api/dashboard/timeline</a><span class="desc">Events, severity chart</span></li>
+    <li><span class="method">POST</span><span class="path">/api/refresh</span><span class="desc">Manual live data refresh (use curl or the frontend refresh button)</span></li>
     <li><span class="method">GET</span><a class="path" href="/api/health">/api/health</a><span class="desc">Health check</span></li>
   </ul>
 </div>
@@ -108,8 +110,8 @@ app.get('/', (req, res) => {
   <h2>Next Steps</h2>
   <p style="font-size:12px;color:#64748b;line-height:1.6">
     Phase 1 complete — API server + SQLite with seed data.<br>
-    Phase 2: Live data scrapers (Yahoo Finance, FRED, SEC EDGAR, news RSS).<br>
-    Phase 3: React frontend replicating the prototype dashboard.
+    Phase 2 complete — React frontend now renders the live dashboard shell.<br>
+    Phase 3 in progress — manual refresh now pulls Yahoo Finance + FRED, scans SEC EDGAR, and runs Google News + Claude enrichment when configured.
   </p>
 </div>
 </body></html>`);

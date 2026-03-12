@@ -1,6 +1,7 @@
 import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import Card from '../shared/Card';
 import { COLORS, AXIS_TICK, GRID_STYLE, FONT_MONO } from '../../lib/constants';
+import { fmtDate, fmtShortDate } from '../../lib/formatters';
 
 /**
  * Custom tooltip for timeline severity chart.
@@ -15,7 +16,7 @@ function TimelineTooltip({ active, payload }) {
         borderRadius: 4, padding: '8px 12px', fontFamily: FONT_MONO, fontSize: 11, maxWidth: 240,
       }}
     >
-      <div style={{ color: COLORS.amber, marginBottom: 4 }}>{d?.date}</div>
+      <div style={{ color: COLORS.amber, marginBottom: 4 }}>{fmtDate(d?.date)}</div>
       <div style={{ color: COLORS.white }}>{d?.event}</div>
       <div style={{ color: COLORS.red, marginTop: 4 }}>Severity: {d?.severity}/6</div>
     </div>
@@ -34,6 +35,7 @@ export default function SeverityChart({ data }) {
           <CartesianGrid {...GRID_STYLE} />
           <XAxis
             dataKey="date" tick={{ ...AXIS_TICK, fontSize: 9 }}
+            tickFormatter={fmtShortDate}
             interval={0} angle={-35} textAnchor="end" height={60}
           />
           <YAxis
