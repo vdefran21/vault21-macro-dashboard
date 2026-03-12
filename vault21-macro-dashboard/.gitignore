@@ -1,0 +1,7 @@
+node_modules/
+.env
+data/vault21.db
+data/backups/
+client/dist/
+*.log
+.DS_Store
