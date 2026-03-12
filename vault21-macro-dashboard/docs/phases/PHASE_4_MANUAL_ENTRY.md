@@ -1,6 +1,6 @@
-# Phase 5: Manual Data Entry + Event Management
+# Phase 4: Manual Data Entry + Event Management
 
-**Status:** NOT STARTED
+**Status:** IN PROGRESS
 **Prereqs:** Phase 2 (frontend), Phase 3 (CRUD endpoints referenced)
 **Architecture ref:** [../ARCHITECTURE.md](../ARCHITECTURE.md)
 
@@ -10,12 +10,19 @@
 
 Ability to manually add/edit events and fund data through the dashboard UI.
 
+## Current Progress
+
+- `server/routes/events.js` now provides `GET/POST/PUT/DELETE /api/events` for timeline event management
+- `client/src/components/timeline/EventForm.jsx` is live for manual event entry, with current date/time defaults
+- `client/src/components/timeline/EventLog.jsx` now supports inline date/time edit/delete for event review workflows
+- Fund management, redemption entry, and dedicated news review queue UI are still pending
+
 ---
 
 ## Tasks
 
 1. **Build `EventForm.jsx` component** — modal for adding timeline events
-   - Fields: date, description, severity (1-6 dropdown), category (dropdown), source URL, notes
+   - Fields: date, time, description, severity (1-6 dropdown), category (dropdown), source URL, notes
    - Submit to `POST /api/events`
 
 2. **Add inline edit capability to `EventLog.jsx`**

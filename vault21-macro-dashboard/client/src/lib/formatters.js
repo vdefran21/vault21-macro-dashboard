@@ -3,6 +3,7 @@
  */
 
 const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_ONLY_RE = /^\d{2}:\d{2}$/;
 
 /**
  * Parse a date-like input without shifting plain YYYY-MM-DD values across
@@ -26,6 +27,26 @@ function parseDisplayDate(value) {
 
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+/**
+ * Combine a stored event date and optional event time into one display-safe
+ * local Date instance.
+ *
+ * @param {string} dateValue
+ * @param {string|null|undefined} timeValue
+ * @returns {Date|null}
+ */
+function parseDisplayDateTime(dateValue, timeValue) {
+  if (!dateValue) return null;
+
+  if (DATE_ONLY_RE.test(dateValue) && timeValue && TIME_ONLY_RE.test(timeValue)) {
+    const [year, month, day] = dateValue.split('-').map(Number);
+    const [hours, minutes] = timeValue.split(':').map(Number);
+    return new Date(year, month - 1, day, hours, minutes);
+  }
+
+  return parseDisplayDate(dateValue);
 }
 
 /**
@@ -85,6 +106,49 @@ export function fmtShortDate(isoDate) {
   if (!parsed) return '—';
   return parsed.toLocaleDateString('en-US', {
     month: 'short', day: 'numeric',
+  });
+}
+
+/**
+ * Format a 24-hour time string for display.
+ * @param {string|null|undefined} timeValue
+ * @returns {string}
+ */
+export function fmtTime(timeValue) {
+  if (!timeValue || !TIME_ONLY_RE.test(timeValue)) return '';
+
+  const [hours, minutes] = timeValue.split(':').map(Number);
+  const parsed = new Date(2000, 0, 1, hours, minutes);
+
+  return parsed.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
+/**
+ * Format a date with an optional stored event time.
+ * @param {string} dateValue
+ * @param {string|null|undefined} timeValue
+ * @returns {string}
+ */
+export function fmtDateTime(dateValue, timeValue) {
+  if (!dateValue) return '—';
+
+  const parsed = parseDisplayDateTime(dateValue, timeValue);
+
+  if (!parsed) return '—';
+
+  if (!timeValue) {
+    return fmtDate(dateValue);
+  }
+
+  return parsed.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
   });
 }
 

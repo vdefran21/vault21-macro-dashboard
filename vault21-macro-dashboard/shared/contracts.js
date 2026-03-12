@@ -134,6 +134,7 @@
  * @typedef {{
  *   id: number,
  *   date: string,
+ *   event_time: string|null,
  *   event: string,
  *   severity: number,
  *   category: string,
@@ -148,7 +149,14 @@
  */
 
 /**
- * @typedef {{ date: string, event: string, severity: number }} SeverityChartPoint
+ * @typedef {{
+ *   id: number,
+ *   chart_key: string,
+ *   date: string,
+ *   event_time: string|null,
+ *   event: string,
+ *   severity: number,
+ * }} SeverityChartPoint
  */
 
 /**
@@ -280,7 +288,8 @@
  *   refreshing: boolean,
  *   lastRefresh: Date|null,
  *   error: string|null,
- *   triggerRefresh: () => Promise<void>,
+  *   triggerRefresh: () => Promise<void>,
+ *   refetch: () => Promise<void>,
  * }} DashboardDataHookResult
  */
 

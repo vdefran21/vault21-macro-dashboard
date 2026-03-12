@@ -4,6 +4,7 @@
 CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date TEXT NOT NULL,
+    event_time TEXT,
     event TEXT NOT NULL,
     severity INTEGER NOT NULL CHECK(severity BETWEEN 1 AND 6),
     category TEXT NOT NULL DEFAULT 'general',

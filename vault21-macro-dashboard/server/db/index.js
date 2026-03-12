@@ -6,6 +6,24 @@ const logger = require('../utils/logger');
 
 let db;
 
+/**
+ * Add a missing column to an existing table without disturbing existing data.
+ *
+ * @param {import('better-sqlite3').Database} dbConn
+ * @param {string} tableName
+ * @param {string} columnName
+ * @param {string} columnDefinition
+ */
+function ensureColumn(dbConn, tableName, columnName, columnDefinition) {
+  const columns = dbConn.prepare(`PRAGMA table_info(${tableName})`).all();
+  const hasColumn = columns.some((column) => column.name === columnName);
+
+  if (!hasColumn) {
+    dbConn.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDefinition}`);
+    logger.info({ tableName, columnName }, 'Database column added');
+  }
+}
+
 function getDb() {
   if (db) return db;
 
@@ -27,6 +45,7 @@ function initSchema() {
   const db = getDb();
   const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf-8');
   db.exec(schema);
+  ensureColumn(db, 'events', 'event_time', 'TEXT');
   logger.info('Database schema initialized');
 }
 

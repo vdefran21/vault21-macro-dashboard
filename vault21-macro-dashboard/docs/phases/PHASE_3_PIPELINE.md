@@ -166,9 +166,6 @@ npm run dev
 # Trigger manual refresh
 curl -X POST http://localhost:3001/api/refresh -H 'Content-Type: application/json' -d '{"scope":"full"}'
 
-# Check refresh status
-curl http://localhost:3001/api/refresh/status
-
 # Verify new data in dashboard
 curl http://localhost:3001/api/dashboard | python3 -m json.tool | head -30
 ```

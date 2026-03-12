@@ -79,7 +79,8 @@ const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 min client-side poll
 export function useDashboardData() {
   // Returns: { data, loading, refreshing, lastRefresh, error, triggerRefresh }
   // fetchData: GET /api/dashboard
-  // triggerRefresh: POST /api/refresh → poll /api/refresh/status → re-fetch
+  // triggerRefresh: POST /api/refresh → re-fetch
+  // Future enhancement: poll GET /api/refresh/status once Phase 5 lands
   // Auto-poll on interval
 }
 ```

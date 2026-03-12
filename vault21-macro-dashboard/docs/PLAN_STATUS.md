@@ -14,8 +14,8 @@
 | 1 | Foundation (Backend + Database) | [PHASE_1](./phases/PHASE_1_FOUNDATION.md) | COMPLETE | 2026-03-12 | 2026-03-12 |
 | 2 | Frontend Migration | [PHASE_2](./phases/PHASE_2_FRONTEND.md) | COMPLETE | 2026-03-12 | 2026-03-12 |
 | 3 | Data Collection Pipeline | [PHASE_3](./phases/PHASE_3_PIPELINE.md) | IN PROGRESS | 2026-03-12 | — |
-| 4 | Scheduler + Process Management | [PHASE_4](./phases/PHASE_4_SCHEDULER.md) | NOT STARTED | — | — |
-| 5 | Manual Data Entry + Event Management | [PHASE_5](./phases/PHASE_5_MANUAL_ENTRY.md) | NOT STARTED | — | — |
+| 4 | Manual Data Entry + Event Management | [PHASE_4](./phases/PHASE_4_MANUAL_ENTRY.md) | IN PROGRESS | 2026-03-12 | — |
+| 5 | Scheduler + Process Management | [PHASE_5](./phases/PHASE_5_SCHEDULER.md) | NOT STARTED | — | — |
 | 6 | Alerting + Monitoring (Optional) | [PHASE_6](./phases/PHASE_6_ALERTING.md) | NOT STARTED | — | — |
 
 ---
@@ -152,9 +152,24 @@ Ref: [PHASE_3_PIPELINE.md](./phases/PHASE_3_PIPELINE.md)
 
 ---
 
-## Phase 4: Scheduler + Process Management — NOT STARTED
+## Phase 4: Manual Data Entry + Event Management — IN PROGRESS
 
-Ref: [PHASE_4_SCHEDULER.md](./phases/PHASE_4_SCHEDULER.md)
+Ref: [PHASE_4_MANUAL_ENTRY.md](./phases/PHASE_4_MANUAL_ENTRY.md)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 1 | Build `EventForm.jsx` modal | DONE | `client/src/components/timeline/EventForm.jsx`; modal now posts manual verified timeline events to `POST /api/events` and defaults both date and time to the current local values |
+| 2 | Add inline edit to `EventLog.jsx` | DONE | `client/src/components/timeline/EventLog.jsx`; inline edit now supports date/time, event text, severity, verified flag, notes, plus delete/review controls |
+| 3 | Build fund management panel | — | |
+| 4 | "Quick add" from news review queue | IN PROGRESS | Auto-generated items now expose review-oriented edit/delete controls in the timeline, but a dedicated queue UI is still outstanding |
+| 5 | Wire up all CRUD endpoints | IN PROGRESS | `server/routes/events.js` implements `GET/POST/PUT/DELETE /api/events`; funds and metrics endpoints remain outstanding |
+| 6 | Test: manual event appears in timeline | IN PROGRESS | Verified with `npm run check:types`, `node --check server/routes/events.js`, `node --check server/routes/dashboard.js`, `npm --prefix client run build`, and a local DB migration probe confirming the new `event_time` column exists. Live browser add/edit/delete flow was not executed in-session because the app was not started here |
+
+---
+
+## Phase 5: Scheduler + Process Management — NOT STARTED
+
+Ref: [PHASE_5_SCHEDULER.md](./phases/PHASE_5_SCHEDULER.md)
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
@@ -166,21 +181,6 @@ Ref: [PHASE_4_SCHEDULER.md](./phases/PHASE_4_SCHEDULER.md)
 | 6 | Create `scripts/backup-db.sh` | — | |
 | 7 | Add graceful shutdown handling | — | Already partially done in Phase 1 (SIGTERM/SIGINT) |
 | 8 | Test: scheduled refreshes fire over 4-hour window | — | |
-
----
-
-## Phase 5: Manual Data Entry + Event Management — NOT STARTED
-
-Ref: [PHASE_5_MANUAL_ENTRY.md](./phases/PHASE_5_MANUAL_ENTRY.md)
-
-| # | Task | Status | Notes |
-|---|------|--------|-------|
-| 1 | Build `EventForm.jsx` modal | — | |
-| 2 | Add inline edit to `EventLog.jsx` | — | |
-| 3 | Build fund management panel | — | |
-| 4 | "Quick add" from news review queue | — | |
-| 5 | Wire up all CRUD endpoints | — | |
-| 6 | Test: manual event appears in timeline | — | |
 
 ---
 
@@ -220,8 +220,10 @@ Cross-ref: [PHASE_1_FOUNDATION.md](./phases/PHASE_1_FOUNDATION.md) → Seed Data
 - **Google News RSS does not reliably expose canonical article URLs** in a directly fetchable form, so the current news pipeline extracts from headlines/snippets when it cannot recover full article text
 - **Auto-generated event history is now bounded** by `AUTO_EVENT_MIN_DATE` (default `2024-01-01`) to keep the timeline focused on the current crisis window and prevent SEC/news backfill from polluting the chart
 - **Fund-profile enrichment is currently conservative**: extracted fund data updates/creates rows in `funds`, but does not yet write new `redemption_events` because the current prompt does not include enough paid-vs-requested detail for chart-safe inserts
-- **`GET /api/refresh/status` remains a Phase 4 task** so the frontend currently waits for `POST /api/refresh` to finish rather than polling a separate status endpoint
-- **Graceful shutdown** partially implemented in Phase 1; full PM2 integration deferred to Phase 4
+- **Phase 4 currently covers timeline event management only**: fund CRUD, redemption entry, metrics endpoints, and a dedicated news review queue still need to be built
+- **Event timestamps are only guaranteed for newly created/edited manual events**: historical seed and previously ingested rows retain date-only values until manually updated or backfilled
+- **`GET /api/refresh/status` remains a Phase 5 task** so the frontend currently waits for `POST /api/refresh` to finish rather than polling a separate status endpoint
+- **Graceful shutdown** partially implemented in Phase 1; full PM2 integration deferred to Phase 5
 - **Plan specified `claude-sonnet-4-20250514`** as default model — set in `.env`
 
 ---
@@ -247,3 +249,6 @@ Cross-ref: [PHASE_1_FOUNDATION.md](./phases/PHASE_1_FOUNDATION.md) → Seed Data
 | 2026-03-12 | Phase 3 continued: implemented SEC EDGAR ingestion, Google News RSS source collectors (Bloomberg/CNBC/Reuters), Claude extraction service, and a deduping ingestion store for auto-generated events/metrics/fund profile updates. | 3 |
 | 2026-03-12 | Added `AUTO_EVENT_MIN_DATE` (default `2024-01-01`), filtered SEC/news event ingestion to that window, added louder manual refresh/source logging, and removed already-ingested pre-2024 auto-generated timeline rows from the local SQLite DB. | 3 |
 | 2026-03-12 | Fixed date-only timezone drift in the timeline UI by parsing `YYYY-MM-DD` as a calendar date instead of UTC midnight. Event log and severity chart now render matching dates. | 2,3 |
+| 2026-03-12 | Reordered the remaining milestones so Manual Data Entry is now Phase 4 and Scheduler + Process Management is now Phase 5. Updated phase docs, architecture references, and plan tracking to match. | 4,5 |
+| 2026-03-12 | Phase 4 started: added `/api/events` CRUD routes, manual event creation modal, inline timeline edit/delete controls, and review badges for auto-generated events. Expanded incremental `checkJs` coverage to the new event-management client files. | 4 |
+| 2026-03-12 | Added optional `event_time` support for manual timeline events, including a safe startup schema migration for existing DBs, current-time defaults in the event form, inline date/time edits, and unique chart keys so same-day events no longer share the wrong tooltip content. | 4 |

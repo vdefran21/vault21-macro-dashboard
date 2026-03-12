@@ -1,3 +1,5 @@
+// @ts-check
+
 import { useState } from 'react';
 import { useDashboardData } from './hooks/useDashboardData';
 
@@ -34,7 +36,7 @@ import EventLog from './components/timeline/EventLog';
  */
 export default function App() {
   const [activeTab, setActiveTab] = useState('overview');
-  const { data, loading, refreshing, lastRefresh, error, triggerRefresh } = useDashboardData();
+  const { data, loading, refreshing, lastRefresh, error, triggerRefresh, refetch } = useDashboardData();
 
   if (loading) return <LoadingSpinner />;
 
@@ -98,7 +100,7 @@ export default function App() {
       {activeTab === 'timeline' && timeline && (
         <div className="flex flex-col gap-4">
           <SeverityChart data={timeline.severity_chart} />
-          <EventLog events={timeline.events} />
+          <EventLog events={timeline.events} onEventCreated={refetch} onEventChanged={refetch} />
           <div className="font-mono text-[10px] text-vault-gray-dark text-center py-2 border-t border-vault-card-border">
             DATA COMPILED FROM BLOOMBERG, REUTERS, CNBC, FT, PITCHBOOK
             <br />

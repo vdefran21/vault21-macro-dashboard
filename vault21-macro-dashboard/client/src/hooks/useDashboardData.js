@@ -61,5 +61,5 @@ export function useDashboardData() {
     };
   }, [fetchData]);
 
-  return { data, loading, refreshing, lastRefresh, error, triggerRefresh };
+  return { data, loading, refreshing, lastRefresh, error, triggerRefresh, refetch: fetchData };
 }

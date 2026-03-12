@@ -25,6 +25,7 @@ initSchema();
 
 // Routes
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/events', require('./routes/events'));
 app.use('/api/refresh', require('./routes/refresh'));
 app.use('/api/health', require('./routes/health'));
 
@@ -101,6 +102,8 @@ app.get('/', (req, res) => {
     <li><span class="method">GET</span><a class="path" href="/api/dashboard/redemptions">/api/dashboard/redemptions</a><span class="desc">Fund scorecard, flows</span></li>
     <li><span class="method">GET</span><a class="path" href="/api/dashboard/contagion">/api/dashboard/contagion</a><span class="desc">Chain, banks, equities</span></li>
     <li><span class="method">GET</span><a class="path" href="/api/dashboard/timeline">/api/dashboard/timeline</a><span class="desc">Events, severity chart</span></li>
+    <li><span class="method">GET</span><span class="path">/api/events</span><span class="desc">Manual/review event list</span></li>
+    <li><span class="method">POST</span><span class="path">/api/events</span><span class="desc">Create manual timeline event</span></li>
     <li><span class="method">POST</span><span class="path">/api/refresh</span><span class="desc">Manual live data refresh (use curl or the frontend refresh button)</span></li>
     <li><span class="method">GET</span><a class="path" href="/api/health">/api/health</a><span class="desc">Health check</span></li>
   </ul>

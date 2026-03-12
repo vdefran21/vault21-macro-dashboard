@@ -195,10 +195,17 @@ function buildContagion(db) {
  * @returns {DashboardTimeline} Timeline payload
  */
 function buildTimeline(db) {
-  const events = db.prepare('SELECT * FROM events ORDER BY date DESC, severity DESC').all();
+  const events = db.prepare(
+    "SELECT * FROM events ORDER BY date DESC, COALESCE(event_time, '00:00') DESC, severity DESC, id DESC"
+  ).all();
 
-  const severity_chart = db.prepare('SELECT * FROM events ORDER BY date ASC, id ASC').all().map((e) => ({
+  const severity_chart = db.prepare(
+    "SELECT * FROM events ORDER BY date ASC, COALESCE(event_time, '00:00') ASC, id ASC"
+  ).all().map((e) => ({
+    id: e.id,
+    chart_key: `${e.date}__${e.event_time || 'notime'}__${e.id}`,
     date: e.date,
+    event_time: e.event_time || null,
     event: e.event,
     severity: e.severity,
   }));

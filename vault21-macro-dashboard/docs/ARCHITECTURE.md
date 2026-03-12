@@ -61,7 +61,7 @@ vault21-macro-dashboard/
 │   └── contracts.js             # Shared JSDoc API contracts for checkJs
 ├── .env                          # API keys, config (gitignored)
 ├── .env.example                  # Template for env vars
-├── pm2.ecosystem.config.js       # PM2 process configuration (Phase 4)
+├── pm2.ecosystem.config.js       # PM2 process configuration (Phase 5)
 ├── tsconfig.typecheck.server.json # Incremental server-side JS type checking
 ├── tsconfig.typecheck.client.json # Incremental client-side JS type checking
 │
@@ -72,8 +72,8 @@ vault21-macro-dashboard/
 │       ├── PHASE_1_FOUNDATION.md
 │       ├── PHASE_2_FRONTEND.md
 │       ├── PHASE_3_PIPELINE.md
-│       ├── PHASE_4_SCHEDULER.md
-│       ├── PHASE_5_MANUAL_ENTRY.md
+│       ├── PHASE_4_MANUAL_ENTRY.md
+│       ├── PHASE_5_SCHEDULER.md
 │       └── PHASE_6_ALERTING.md
 │
 ├── server/
@@ -86,13 +86,13 @@ vault21-macro-dashboard/
 │   │   └── seed.js               # Initial data seeding (historical events)
 │   ├── routes/
 │   │   ├── dashboard.js          # GET /api/dashboard — full dashboard payload
-│   │   ├── events.js             # CRUD /api/events — timeline events (Phase 5)
-│   │   ├── funds.js              # CRUD /api/funds — fund redemption data (Phase 5)
-│   │   ├── metrics.js            # GET /api/metrics — aggregate statistics (Phase 5)
+│   │   ├── events.js             # CRUD /api/events — timeline events (Phase 4)
+│   │   ├── funds.js              # CRUD /api/funds — fund redemption data (Phase 4)
+│   │   ├── metrics.js            # GET /api/metrics — aggregate statistics (Phase 4)
 │   │   ├── refresh.js            # POST /api/refresh — manual data refresh (Phase 3)
 │   │   └── health.js             # GET /api/health — system status
 │   ├── services/
-│   │   ├── scheduler.js          # node-cron job definitions (Phase 4)
+│   │   ├── scheduler.js          # node-cron job definitions (Phase 5)
 │   │   ├── refreshPipeline.js    # Orchestrates full data refresh cycle (Phase 3)
 │   │   ├── scrapers/             # (Phase 3)
 │   │   │   ├── yahoo.js          # Yahoo Finance equity prices
@@ -132,9 +132,9 @@ vault21-macro-dashboard/
 │       └── styles/               # globals.css
 │
 ├── scripts/
-│   ├── setup.sh                  # (Phase 4)
-│   ├── refresh.sh                # (Phase 4)
-│   └── backup-db.sh              # (Phase 4)
+│   ├── setup.sh                  # (Phase 5)
+│   ├── refresh.sh                # (Phase 5)
+│   └── backup-db.sh              # (Phase 5)
 │
 └── data/
     ├── vault21.db                # SQLite database (gitignored)
@@ -150,7 +150,7 @@ vault21-macro-dashboard/
 ### Tables
 
 **events** — Core timeline events
-- `id`, `date` (ISO 8601), `event`, `severity` (1-6), `category`, `source`, `source_name`, `verified`, `auto_generated`, `notes`, `created_at`, `updated_at`
+- `id`, `date` (ISO 8601), `event_time` (optional `HH:mm`), `event`, `severity` (1-6), `category`, `source`, `source_name`, `verified`, `auto_generated`, `notes`, `created_at`, `updated_at`
 - Categories: `redemption`, `gating`, `bankruptcy`, `regulatory`, `bank_action`, `market_move`, `analyst_warning`, `policy`
 
 **funds** — Fund profiles
@@ -208,10 +208,10 @@ Full SQL: `server/db/schema.sql`
 | `GET` | `/api/dashboard/contagion` | Contagion tab data only |
 | `GET` | `/api/dashboard/timeline` | Timeline tab data only |
 | `POST` | `/api/refresh` | Trigger manual refresh (Phase 3) |
-| `GET` | `/api/refresh/status` | Refresh status + history (Phase 4) |
+| `GET` | `/api/refresh/status` | Refresh status + history (Phase 5) |
 | `GET` | `/api/health` | System health check |
 
-### Data Management Endpoints (Phase 5)
+### Data Management Endpoints (Phase 4)
 
 | Method | Path | Description |
 |--------|------|-------------|
