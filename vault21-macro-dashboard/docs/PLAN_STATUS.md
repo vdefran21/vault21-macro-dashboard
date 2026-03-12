@@ -1,26 +1,28 @@
 # vault21 macro dashboard — Plan Status & Tracking
 
-**Implementation Plan:** [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md)
+**Architecture:** [ARCHITECTURE.md](./ARCHITECTURE.md)
+**Full plan:** [../IMPLEMENTATION_PLAN.md](../IMPLEMENTATION_PLAN.md)
+**Phase specs:** [phases/](./phases/)
 **Last Updated:** 2026-03-12
 
 ---
 
 ## Phase Overview
 
-| Phase | Name | Status | Started | Completed |
-|-------|------|--------|---------|-----------|
-| 1 | Foundation (Backend + Database) | COMPLETE | 2026-03-12 | 2026-03-12 |
-| 2 | Frontend Migration | NOT STARTED | — | — |
-| 3 | Data Collection Pipeline | NOT STARTED | — | — |
-| 4 | Scheduler + Process Management | NOT STARTED | — | — |
-| 5 | Manual Data Entry + Event Management | NOT STARTED | — | — |
-| 6 | Alerting + Monitoring (Optional) | NOT STARTED | — | — |
+| Phase | Name | Spec | Status | Started | Completed |
+|-------|------|------|--------|---------|-----------|
+| 1 | Foundation (Backend + Database) | [PHASE_1](./phases/PHASE_1_FOUNDATION.md) | COMPLETE | 2026-03-12 | 2026-03-12 |
+| 2 | Frontend Migration | [PHASE_2](./phases/PHASE_2_FRONTEND.md) | NOT STARTED | — | — |
+| 3 | Data Collection Pipeline | [PHASE_3](./phases/PHASE_3_PIPELINE.md) | NOT STARTED | — | — |
+| 4 | Scheduler + Process Management | [PHASE_4](./phases/PHASE_4_SCHEDULER.md) | NOT STARTED | — | — |
+| 5 | Manual Data Entry + Event Management | [PHASE_5](./phases/PHASE_5_MANUAL_ENTRY.md) | NOT STARTED | — | — |
+| 6 | Alerting + Monitoring (Optional) | [PHASE_6](./phases/PHASE_6_ALERTING.md) | NOT STARTED | — | — |
 
 ---
 
 ## Phase 1: Foundation (Backend + Database) — COMPLETE
 
-Ref: `IMPLEMENTATION_PLAN.md` → "Phase 1: Foundation (Backend + Database)"
+Ref: [PHASE_1_FOUNDATION.md](./phases/PHASE_1_FOUNDATION.md)
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
@@ -64,7 +66,7 @@ vault21-macro-dashboard/
 
 ## Phase 2: Frontend Migration — NOT STARTED
 
-Ref: `IMPLEMENTATION_PLAN.md` → "Phase 2: Frontend Migration"
+Ref: [PHASE_2_FRONTEND.md](./phases/PHASE_2_FRONTEND.md)
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
@@ -83,7 +85,7 @@ Ref: `IMPLEMENTATION_PLAN.md` → "Phase 2: Frontend Migration"
 
 ## Phase 3: Data Collection Pipeline — NOT STARTED
 
-Ref: `IMPLEMENTATION_PLAN.md` → "Phase 3: Data Collection Pipeline"
+Ref: [PHASE_3_PIPELINE.md](./phases/PHASE_3_PIPELINE.md)
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
@@ -100,7 +102,7 @@ Ref: `IMPLEMENTATION_PLAN.md` → "Phase 3: Data Collection Pipeline"
 
 ## Phase 4: Scheduler + Process Management — NOT STARTED
 
-Ref: `IMPLEMENTATION_PLAN.md` → "Phase 4: Scheduler + Process Management"
+Ref: [PHASE_4_SCHEDULER.md](./phases/PHASE_4_SCHEDULER.md)
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
@@ -117,7 +119,7 @@ Ref: `IMPLEMENTATION_PLAN.md` → "Phase 4: Scheduler + Process Management"
 
 ## Phase 5: Manual Data Entry + Event Management — NOT STARTED
 
-Ref: `IMPLEMENTATION_PLAN.md` → "Phase 5: Manual Data Entry + Event Management"
+Ref: [PHASE_5_MANUAL_ENTRY.md](./phases/PHASE_5_MANUAL_ENTRY.md)
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
@@ -132,7 +134,7 @@ Ref: `IMPLEMENTATION_PLAN.md` → "Phase 5: Manual Data Entry + Event Management
 
 ## Phase 6: Alerting + Monitoring (Optional) — NOT STARTED
 
-Ref: `IMPLEMENTATION_PLAN.md` → "Phase 6: Alerting + Monitoring (Optional)"
+Ref: [PHASE_6_ALERTING.md](./phases/PHASE_6_ALERTING.md)
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
@@ -145,7 +147,7 @@ Ref: `IMPLEMENTATION_PLAN.md` → "Phase 6: Alerting + Monitoring (Optional)"
 
 ## Seed Data Inventory
 
-Cross-ref: `IMPLEMENTATION_PLAN.md` → "Seed Data Script Reference"
+Cross-ref: [PHASE_1_FOUNDATION.md](./phases/PHASE_1_FOUNDATION.md) → Seed Data Reference
 
 | Table | Records | Coverage |
 |-------|---------|----------|
@@ -177,3 +179,5 @@ Cross-ref: `IMPLEMENTATION_PLAN.md` → "Seed Data Script Reference"
 | 2026-03-12 | Root route dev status page added (not in original plan) | 1 |
 | 2026-03-12 | README.md created with project docs | — |
 | 2026-03-12 | PLAN_STATUS.md created | — |
+| 2026-03-12 | Docs split: ARCHITECTURE.md + 6 phase files created, PLAN_STATUS.md moved to docs/ | — |
+| 2026-03-12 | CLAUDE.md created: project guidance, conventions, testing philosophy, doc standards | — |
