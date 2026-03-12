@@ -15,7 +15,9 @@
     "shared/contracts.js",
     "client/src/lib/api.js",
     "client/src/hooks/useDashboardData.js",
+    "client/src/components/redemptions/FundManagementPanel.jsx",
     "client/src/components/timeline/EventForm.jsx",
-    "client/src/components/timeline/EventLog.jsx"
+    "client/src/components/timeline/EventLog.jsx",
+    "client/src/components/timeline/ReviewQueue.jsx"
   ]
 }

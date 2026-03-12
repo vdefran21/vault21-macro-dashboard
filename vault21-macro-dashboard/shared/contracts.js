@@ -162,6 +162,7 @@
 /**
  * @typedef {{
  *   events: TimelineEvent[],
+ *   review_queue: TimelineEvent[],
  *   severity_chart: SeverityChartPoint[],
  * }} DashboardTimeline
  */

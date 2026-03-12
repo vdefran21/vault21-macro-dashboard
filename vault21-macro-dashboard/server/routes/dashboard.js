@@ -139,18 +139,23 @@ function buildRedemptions(db) {
       LIMIT 1
     )
     ORDER BY f.aum_billions DESC
-  `).all();
+  `).all().map((fund) => ({
+    ...fund,
+    status: fund.status || 'tracking',
+    response_detail: fund.response_detail || 'Awaiting first redemption entry',
+  }));
 
   const rate_chart = funds.map((f) => ({
     fund: f.name.replace(/^(Blackstone |BlackRock |Cliffwater |Blue Owl )/, ''),
     requested: (f.redemption_requested_pct || 0) > 100 ? 25 : f.redemption_requested_pct,
     paid: f.redemption_paid_pct ?? null,
-  }));
+  }))
+    .filter((f) => f.requested != null || f.paid != null);
 
   const dollar_flows = funds
     .filter((f) => Number.isFinite(f.redemption_requested_amt))
     .map((f) => ({
-      fund: `${f.name.replace(/^(Blackstone |BlackRock |Cliffwater |Blue Owl )/, '')} ($${f.aum_billions}B)`,
+      fund: `${f.name.replace(/^(Blackstone |BlackRock |Cliffwater |Blue Owl )/, '')} ($${f.aum_billions ?? '—'}B)`,
       requested: f.redemption_requested_amt,
       returned: f.redemption_paid_amt ?? null,
     }));
@@ -196,11 +201,30 @@ function buildContagion(db) {
  */
 function buildTimeline(db) {
   const events = db.prepare(
-    "SELECT * FROM events ORDER BY date DESC, COALESCE(event_time, '00:00') DESC, severity DESC, id DESC"
+    `
+      SELECT *
+      FROM events
+      WHERE auto_generated = 0 OR verified = 1
+      ORDER BY date DESC, COALESCE(event_time, '00:00') DESC, severity DESC, id DESC
+    `
+  ).all();
+
+  const review_queue = db.prepare(
+    `
+      SELECT *
+      FROM events
+      WHERE auto_generated = 1 AND verified = 0
+      ORDER BY date DESC, COALESCE(event_time, '00:00') DESC, severity DESC, id DESC
+    `
   ).all();
 
   const severity_chart = db.prepare(
-    "SELECT * FROM events ORDER BY date ASC, COALESCE(event_time, '00:00') ASC, id ASC"
+    `
+      SELECT *
+      FROM events
+      WHERE auto_generated = 0 OR verified = 1
+      ORDER BY date ASC, COALESCE(event_time, '00:00') ASC, id ASC
+    `
   ).all().map((e) => ({
     id: e.id,
     chart_key: `${e.date}__${e.event_time || 'notime'}__${e.id}`,
@@ -210,7 +234,7 @@ function buildTimeline(db) {
     severity: e.severity,
   }));
 
-  return { events, severity_chart };
+  return { events, review_queue, severity_chart };
 }
 
 /**

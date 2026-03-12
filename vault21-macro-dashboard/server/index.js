@@ -26,6 +26,8 @@ initSchema();
 // Routes
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/events', require('./routes/events'));
+app.use('/api/funds', require('./routes/funds'));
+app.use('/api/metrics', require('./routes/metrics'));
 app.use('/api/refresh', require('./routes/refresh'));
 app.use('/api/health', require('./routes/health'));
 
@@ -104,6 +106,11 @@ app.get('/', (req, res) => {
     <li><span class="method">GET</span><a class="path" href="/api/dashboard/timeline">/api/dashboard/timeline</a><span class="desc">Events, severity chart</span></li>
     <li><span class="method">GET</span><span class="path">/api/events</span><span class="desc">Manual/review event list</span></li>
     <li><span class="method">POST</span><span class="path">/api/events</span><span class="desc">Create manual timeline event</span></li>
+    <li><span class="method">GET</span><span class="path">/api/funds</span><span class="desc">Tracked fund list + latest redemption snapshot</span></li>
+    <li><span class="method">POST</span><span class="path">/api/funds</span><span class="desc">Create tracked fund</span></li>
+    <li><span class="method">POST</span><span class="path">/api/funds/:id/redemptions</span><span class="desc">Append redemption event to a tracked fund</span></li>
+    <li><span class="method">GET</span><span class="path">/api/metrics/latest</span><span class="desc">Latest value per metric</span></li>
+    <li><span class="method">GET</span><span class="path">/api/metrics/:name/history</span><span class="desc">Metric history series</span></li>
     <li><span class="method">POST</span><span class="path">/api/refresh</span><span class="desc">Manual live data refresh (use curl or the frontend refresh button)</span></li>
     <li><span class="method">GET</span><a class="path" href="/api/health">/api/health</a><span class="desc">Health check</span></li>
   </ul>
@@ -114,7 +121,9 @@ app.get('/', (req, res) => {
   <p style="font-size:12px;color:#64748b;line-height:1.6">
     Phase 1 complete — API server + SQLite with seed data.<br>
     Phase 2 complete — React frontend now renders the live dashboard shell.<br>
-    Phase 3 in progress — manual refresh now pulls Yahoo Finance + FRED, scans SEC EDGAR, and runs Google News + Claude enrichment when configured.
+    Phase 3 in progress — manual refresh now pulls Yahoo Finance + FRED, scans SEC EDGAR, and runs Google News + Claude enrichment when configured.<br>
+    Phase 4 complete — manual event review, fund management, and metric/fund data entry workflows are live.<br>
+    Phase 5 next — scheduler, refresh status, and process-management hardening.
   </p>
 </div>
 </body></html>`);

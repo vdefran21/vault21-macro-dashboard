@@ -3,6 +3,8 @@ const CONFIG = {
   extraordinary: { bg: '#78350f', color: '#fbbf24', label: 'EXTRAORDINARY' },
   gated: { bg: '#7c2d12', color: '#f59e0b', label: 'GATED' },
   liquidating: { bg: '#7f1d1d', color: '#ef4444', label: 'LIQUIDATING' },
+  pending: { bg: '#78350f', color: '#f59e0b', label: 'PENDING' },
+  tracking: { bg: '#0f172a', color: '#06b6d4', label: 'TRACKING' },
 };
 
 /**
@@ -18,7 +20,8 @@ const CONFIG = {
  * @param {{ status: string }} props
  */
 export default function StatusBadge({ status }) {
-  const cfg = CONFIG[status] || { bg: '#334155', color: '#64748b', label: status };
+  const normalizedStatus = status || 'tracking';
+  const cfg = CONFIG[normalizedStatus] || { bg: '#334155', color: '#64748b', label: normalizedStatus };
   return (
     <span
       className="inline-block px-2 py-0.5 rounded font-mono text-[10px] font-bold tracking-[1px]"

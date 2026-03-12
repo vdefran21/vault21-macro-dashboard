@@ -123,9 +123,9 @@ vault21-macro-dashboard/
 │       ├── components/
 │       │   ├── layout/           # Header, TabNavigation, StatusBar
 │       │   ├── overview/         # StatGrid, DefaultRateChart, SectorExposure, PIKTrend, MaturityWall
-│       │   ├── redemptions/      # FundScorecard, RedemptionRateChart, DollarFlowChart, StatusBadge
+│       │   ├── redemptions/      # FundScorecard, FundManagementPanel, RedemptionRateChart, DollarFlowChart, StatusBadge
 │       │   ├── contagion/        # TransmissionChain, BankExposure, AltManagerEquity
-│       │   ├── timeline/         # SeverityChart, EventLog, EventForm
+│       │   ├── timeline/         # ReviewQueue, SeverityChart, EventLog, EventForm
 │       │   └── shared/           # Card, ChartTooltip, LoadingSpinner
 │       ├── hooks/                # useDashboardData, useAutoRefresh, useWebSocket
 │       ├── lib/                  # api.js, constants.js, formatters.js
@@ -252,11 +252,14 @@ Full SQL: `server/db/schema.sql`
     "alt_manager_equity": [{ "ticker": "OWL", "ytd_pct": -27, "from_high_pct": -60 }]
   },
   "timeline": {
-    "events": [{ "date": "...", "event": "...", "severity": 6, "category": "..." }],
-    "severity_chart": [{ "date": "...", "event": "...", "severity": 6 }]
+    "events": [{ "date": "...", "event_time": "09:15", "event": "...", "severity": 6, "category": "...", "verified": 1 }],
+    "review_queue": [{ "date": "...", "event": "...", "severity": 4, "auto_generated": 1, "verified": 0 }],
+    "severity_chart": [{ "chart_key": "2026-03-12__09:15__88", "date": "...", "event_time": "09:15", "event": "...", "severity": 6 }]
   }
 }
 ```
+
+`timeline.events` and `timeline.severity_chart` contain the official chronology (manual events plus approved auto-generated events). `timeline.review_queue` contains pending auto-generated candidates that still require manual review.
 
 ---
 

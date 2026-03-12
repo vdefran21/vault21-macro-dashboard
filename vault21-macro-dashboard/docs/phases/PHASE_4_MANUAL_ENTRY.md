@@ -1,6 +1,6 @@
 # Phase 4: Manual Data Entry + Event Management
 
-**Status:** IN PROGRESS
+**Status:** COMPLETE
 **Prereqs:** Phase 2 (frontend), Phase 3 (CRUD endpoints referenced)
 **Architecture ref:** [../ARCHITECTURE.md](../ARCHITECTURE.md)
 
@@ -14,8 +14,10 @@ Ability to manually add/edit events and fund data through the dashboard UI.
 
 - `server/routes/events.js` now provides `GET/POST/PUT/DELETE /api/events` for timeline event management
 - `client/src/components/timeline/EventForm.jsx` is live for manual event entry, with current date/time defaults
-- `client/src/components/timeline/EventLog.jsx` now supports inline date/time edit/delete for event review workflows
-- Fund management, redemption entry, and dedicated news review queue UI are still pending
+- `client/src/components/timeline/EventLog.jsx` now supports inline date/time edit/delete for verified event management
+- `client/src/components/timeline/ReviewQueue.jsx` now provides approve/reject/edit workflows for unverified auto-generated events
+- `client/src/components/redemptions/FundManagementPanel.jsx` now creates tracked funds and redemption updates from the redemptions tab
+- `server/routes/funds.js` and `server/routes/metrics.js` complete the remaining Phase 4 endpoint surface
 
 ---
 
@@ -53,11 +55,10 @@ Ability to manually add/edit events and fund data through the dashboard UI.
 ## Verification
 
 ```bash
-# Add event via API
-curl -X POST http://localhost:3001/api/events \
-  -H 'Content-Type: application/json' \
-  -d '{"date":"2026-03-13","event":"Test manual event","severity":3,"category":"general"}'
+# Static verification
+npm run check:types
+npm --prefix client run build
 
-# Verify in dashboard
-curl http://localhost:3001/api/dashboard/timeline | python3 -m json.tool | head -20
+# Route smoke tests (mocked Express req/res, no full app boot)
+node scripts/phase4-smoke.js
 ```

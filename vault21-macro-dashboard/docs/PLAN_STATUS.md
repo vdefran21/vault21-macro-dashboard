@@ -14,7 +14,7 @@
 | 1 | Foundation (Backend + Database) | [PHASE_1](./phases/PHASE_1_FOUNDATION.md) | COMPLETE | 2026-03-12 | 2026-03-12 |
 | 2 | Frontend Migration | [PHASE_2](./phases/PHASE_2_FRONTEND.md) | COMPLETE | 2026-03-12 | 2026-03-12 |
 | 3 | Data Collection Pipeline | [PHASE_3](./phases/PHASE_3_PIPELINE.md) | IN PROGRESS | 2026-03-12 | — |
-| 4 | Manual Data Entry + Event Management | [PHASE_4](./phases/PHASE_4_MANUAL_ENTRY.md) | IN PROGRESS | 2026-03-12 | — |
+| 4 | Manual Data Entry + Event Management | [PHASE_4](./phases/PHASE_4_MANUAL_ENTRY.md) | COMPLETE | 2026-03-12 | 2026-03-12 |
 | 5 | Scheduler + Process Management | [PHASE_5](./phases/PHASE_5_SCHEDULER.md) | NOT STARTED | — | — |
 | 6 | Alerting + Monitoring (Optional) | [PHASE_6](./phases/PHASE_6_ALERTING.md) | NOT STARTED | — | — |
 
@@ -152,7 +152,7 @@ Ref: [PHASE_3_PIPELINE.md](./phases/PHASE_3_PIPELINE.md)
 
 ---
 
-## Phase 4: Manual Data Entry + Event Management — IN PROGRESS
+## Phase 4: Manual Data Entry + Event Management — COMPLETE
 
 Ref: [PHASE_4_MANUAL_ENTRY.md](./phases/PHASE_4_MANUAL_ENTRY.md)
 
@@ -160,10 +160,10 @@ Ref: [PHASE_4_MANUAL_ENTRY.md](./phases/PHASE_4_MANUAL_ENTRY.md)
 |---|------|--------|-------|
 | 1 | Build `EventForm.jsx` modal | DONE | `client/src/components/timeline/EventForm.jsx`; modal now posts manual verified timeline events to `POST /api/events` and defaults both date and time to the current local values |
 | 2 | Add inline edit to `EventLog.jsx` | DONE | `client/src/components/timeline/EventLog.jsx`; inline edit now supports date/time, event text, severity, verified flag, notes, plus delete/review controls |
-| 3 | Build fund management panel | — | |
-| 4 | "Quick add" from news review queue | IN PROGRESS | Auto-generated items now expose review-oriented edit/delete controls in the timeline, but a dedicated queue UI is still outstanding |
-| 5 | Wire up all CRUD endpoints | IN PROGRESS | `server/routes/events.js` implements `GET/POST/PUT/DELETE /api/events`; funds and metrics endpoints remain outstanding |
-| 6 | Test: manual event appears in timeline | IN PROGRESS | Verified with `npm run check:types`, `node --check server/routes/events.js`, `node --check server/routes/dashboard.js`, `npm --prefix client run build`, and a local DB migration probe confirming the new `event_time` column exists. Live browser add/edit/delete flow was not executed in-session because the app was not started here |
+| 3 | Build fund management panel | DONE | `client/src/components/redemptions/FundManagementPanel.jsx`; redemptions tab now supports creating tracked funds and posting new redemption updates through the dashboard |
+| 4 | "Quick add" from news review queue | DONE | `client/src/components/timeline/ReviewQueue.jsx`; pending auto-generated events now appear in a dedicated review queue with approve, reject, edit, and save-and-approve workflows |
+| 5 | Wire up all CRUD endpoints | DONE | `server/routes/events.js`, `server/routes/funds.js`, and `server/routes/metrics.js` now provide the full Phase 4 endpoint surface: events CRUD, fund add/list, redemption add, metric latest, and metric history |
+| 6 | Test: manual event appears in timeline | DONE | User-confirmed manual event creation worked in the live UI. Additional verification passed via `npm run check:types`, `node --check` on the touched server routes, `npm --prefix client run build`, local DB migration probes, and mocked Express smoke tests for the new Phase 4 routes |
 
 ---
 
@@ -220,7 +220,7 @@ Cross-ref: [PHASE_1_FOUNDATION.md](./phases/PHASE_1_FOUNDATION.md) → Seed Data
 - **Google News RSS does not reliably expose canonical article URLs** in a directly fetchable form, so the current news pipeline extracts from headlines/snippets when it cannot recover full article text
 - **Auto-generated event history is now bounded** by `AUTO_EVENT_MIN_DATE` (default `2024-01-01`) to keep the timeline focused on the current crisis window and prevent SEC/news backfill from polluting the chart
 - **Fund-profile enrichment is currently conservative**: extracted fund data updates/creates rows in `funds`, but does not yet write new `redemption_events` because the current prompt does not include enough paid-vs-requested detail for chart-safe inserts
-- **Phase 4 currently covers timeline event management only**: fund CRUD, redemption entry, metrics endpoints, and a dedicated news review queue still need to be built
+- **Unverified auto-generated events are now intentionally separated** into the Phase 4 review queue and are excluded from the official chart/log until approved
 - **Event timestamps are only guaranteed for newly created/edited manual events**: historical seed and previously ingested rows retain date-only values until manually updated or backfilled
 - **`GET /api/refresh/status` remains a Phase 5 task** so the frontend currently waits for `POST /api/refresh` to finish rather than polling a separate status endpoint
 - **Graceful shutdown** partially implemented in Phase 1; full PM2 integration deferred to Phase 5
@@ -252,3 +252,4 @@ Cross-ref: [PHASE_1_FOUNDATION.md](./phases/PHASE_1_FOUNDATION.md) → Seed Data
 | 2026-03-12 | Reordered the remaining milestones so Manual Data Entry is now Phase 4 and Scheduler + Process Management is now Phase 5. Updated phase docs, architecture references, and plan tracking to match. | 4,5 |
 | 2026-03-12 | Phase 4 started: added `/api/events` CRUD routes, manual event creation modal, inline timeline edit/delete controls, and review badges for auto-generated events. Expanded incremental `checkJs` coverage to the new event-management client files. | 4 |
 | 2026-03-12 | Added optional `event_time` support for manual timeline events, including a safe startup schema migration for existing DBs, current-time defaults in the event form, inline date/time edits, and unique chart keys so same-day events no longer share the wrong tooltip content. | 4 |
+| 2026-03-12 | Phase 4 completed: added fund management UI, `/api/funds` and `/api/metrics` routes, a dedicated auto-generated event review queue, and official timeline filtering so only approved/manual events appear in the main chart and log. Verified the new routes with mocked Express smoke tests and static/build checks. | 4 |

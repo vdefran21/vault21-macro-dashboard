@@ -1,6 +1,6 @@
 import Card from '../shared/Card';
 import StatusBadge from '../shared/StatusBadge';
-import { COLORS, FONT_MONO } from '../../lib/constants';
+import { COLORS } from '../../lib/constants';
 
 /**
  * Fund-by-fund redemption scorecard with status badges.
@@ -8,7 +8,7 @@ import { COLORS, FONT_MONO } from '../../lib/constants';
 export default function FundScorecard({ funds }) {
   if (!funds?.length) return null;
   return (
-    <Card title="Fund Redemption Scorecard" subtitle="Q1 2026 — Major private credit fund withdrawal activity">
+    <Card title="Fund Redemption Scorecard" subtitle="Latest redemption snapshot across tracked private credit vehicles">
       <div className="flex flex-col gap-3">
         {funds.map((fund, i) => (
           <div
@@ -17,24 +17,37 @@ export default function FundScorecard({ funds }) {
           >
             <div>
               <div className="font-mono text-[13px] font-bold text-vault-white">{fund.name}</div>
-              <div className="font-mono text-[10px] text-vault-gray mt-0.5">{fund.response_detail}</div>
+              <div className="font-mono text-[10px] text-vault-gray mt-0.5">{fund.response_detail || 'Awaiting first redemption entry'}</div>
             </div>
             <div className="text-center">
-              <div className="font-mono text-base font-bold text-vault-cyan">${fund.aum_billions}B</div>
+              <div className="font-mono text-base font-bold text-vault-cyan">
+                {fund.aum_billions != null ? `$${fund.aum_billions}B` : '—'}
+              </div>
               <div className="text-[9px] text-vault-gray font-mono">AUM</div>
             </div>
             <div className="text-center">
               <div
                 className="font-mono text-base font-bold"
-                style={{ color: fund.redemption_requested_pct > 50 ? COLORS.red : COLORS.amber }}
+                style={{
+                  color:
+                    fund.redemption_requested_pct == null
+                      ? COLORS.gray
+                      : fund.redemption_requested_pct > 50
+                        ? COLORS.red
+                        : COLORS.amber,
+                }}
               >
-                {fund.redemption_requested_pct > 100 ? '200%+' : `${fund.redemption_requested_pct}%`}
+                {fund.redemption_requested_pct == null
+                  ? '—'
+                  : fund.redemption_requested_pct > 100
+                    ? '200%+'
+                    : `${fund.redemption_requested_pct}%`}
               </div>
               <div className="text-[9px] text-vault-gray font-mono">REDEMPTION REQ</div>
             </div>
             <div className="text-center">
               <div className="font-mono text-base font-bold text-vault-white">
-                {fund.redemption_requested_amt ? `$${fund.redemption_requested_amt}B` : 'N/A'}
+                {fund.redemption_requested_amt != null ? `$${fund.redemption_requested_amt}B` : '—'}
               </div>
               <div className="text-[9px] text-vault-gray font-mono">$ REQUESTED</div>
             </div>

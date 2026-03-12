@@ -20,6 +20,7 @@ import MaturityWall from './components/overview/MaturityWall';
 import FundScorecard from './components/redemptions/FundScorecard';
 import RedemptionRateChart from './components/redemptions/RedemptionRateChart';
 import DollarFlowChart from './components/redemptions/DollarFlowChart';
+import FundManagementPanel from './components/redemptions/FundManagementPanel';
 
 // Contagion
 import TransmissionChain from './components/contagion/TransmissionChain';
@@ -29,6 +30,7 @@ import AltManagerEquity from './components/contagion/AltManagerEquity';
 // Timeline
 import SeverityChart from './components/timeline/SeverityChart';
 import EventLog from './components/timeline/EventLog';
+import ReviewQueue from './components/timeline/ReviewQueue';
 
 /**
  * Root dashboard component. Fetches data via useDashboardData hook
@@ -82,6 +84,7 @@ export default function App() {
       {activeTab === 'redemptions' && redemptions && (
         <div className="flex flex-col gap-4">
           <FundScorecard funds={redemptions.funds} />
+          <FundManagementPanel funds={redemptions.funds} onChanged={refetch} />
           <RedemptionRateChart data={redemptions.rate_chart} />
           <DollarFlowChart data={redemptions.dollar_flows} />
         </div>
@@ -99,6 +102,7 @@ export default function App() {
       {/* Timeline Tab */}
       {activeTab === 'timeline' && timeline && (
         <div className="flex flex-col gap-4">
+          <ReviewQueue events={timeline.review_queue} onEventChanged={refetch} />
           <SeverityChart data={timeline.severity_chart} />
           <EventLog events={timeline.events} onEventCreated={refetch} onEventChanged={refetch} />
           <div className="font-mono text-[10px] text-vault-gray-dark text-center py-2 border-t border-vault-card-border">
