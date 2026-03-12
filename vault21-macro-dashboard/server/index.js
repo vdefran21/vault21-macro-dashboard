@@ -27,17 +27,17 @@ initSchema();
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/health', require('./routes/health'));
 
-// Root — serve status page in dev, static frontend in production
+// Serve the built frontend only outside development.
 const clientDist = path.join(__dirname, '..', 'client', 'dist');
+const shouldServeBuiltClient = config.nodeEnv === 'production' && require('fs').existsSync(path.join(clientDist, 'index.html'));
 
 app.get('/', (req, res) => {
-  // If built frontend exists, serve it
-  const indexPath = path.join(clientDist, 'index.html');
-  if (require('fs').existsSync(indexPath)) {
-    return res.sendFile(indexPath);
+  if (shouldServeBuiltClient) {
+    return res.sendFile(path.join(clientDist, 'index.html'));
   }
 
-  // Otherwise serve a dev status page
+  // In development, keep the backend status page visible so stale dist builds
+  // do not mask frontend changes from the Vite dev server.
   const { getDb } = require('./db');
   const db = getDb();
   const eventCount = db.prepare('SELECT COUNT(*) as c FROM events').get().c;
@@ -76,6 +76,14 @@ app.get('/', (req, res) => {
 <div class="banner">$1.8T INDUSTRY UNDER STRESS — GATING CASCADE ACTIVE — BANK LEVERAGE CONTRACTING</div>
 
 <div class="card">
+  <h2>Development Mode</h2>
+  <p style="font-size:12px;color:#64748b;line-height:1.6">
+    Backend is running on <span class="white">:${config.port}</span>.<br>
+    For live React changes and HMR, open <a href="http://localhost:5173">http://localhost:5173</a> and run <span class="white">npm run dev</span> from the project root.
+  </p>
+</div>
+
+<div class="card">
   <h2>Database Status</h2>
   <div class="stat"><div class="val green">ONLINE</div><div class="lbl">STATUS</div></div>
   <div class="stat"><div class="val white">${eventCount}</div><div class="lbl">EVENTS</div></div>
@@ -107,8 +115,8 @@ app.get('/', (req, res) => {
 </body></html>`);
 });
 
-// Serve static assets if frontend is built
-if (require('fs').existsSync(clientDist)) {
+// Serve static assets only in production so development always uses Vite.
+if (shouldServeBuiltClient) {
   app.use(express.static(clientDist));
 }
 

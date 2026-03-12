@@ -12,7 +12,7 @@
 | Phase | Name | Spec | Status | Started | Completed |
 |-------|------|------|--------|---------|-----------|
 | 1 | Foundation (Backend + Database) | [PHASE_1](./phases/PHASE_1_FOUNDATION.md) | COMPLETE | 2026-03-12 | 2026-03-12 |
-| 2 | Frontend Migration | [PHASE_2](./phases/PHASE_2_FRONTEND.md) | NOT STARTED | — | — |
+| 2 | Frontend Migration | [PHASE_2](./phases/PHASE_2_FRONTEND.md) | COMPLETE | 2026-03-12 | 2026-03-12 |
 | 3 | Data Collection Pipeline | [PHASE_3](./phases/PHASE_3_PIPELINE.md) | NOT STARTED | — | — |
 | 4 | Scheduler + Process Management | [PHASE_4](./phases/PHASE_4_SCHEDULER.md) | NOT STARTED | — | — |
 | 5 | Manual Data Entry + Event Management | [PHASE_5](./phases/PHASE_5_MANUAL_ENTRY.md) | NOT STARTED | — | — |
@@ -57,29 +57,81 @@ vault21-macro-dashboard/
 │   │   └── health.js
 │   └── utils/
 │       └── logger.js
-├── client/src/           (empty, Phase 2)
+├── client/               (see Phase 2 file listing)
 ├── data/vault21.db       (gitignored)
 └── README.md
 ```
 
 ---
 
-## Phase 2: Frontend Migration — NOT STARTED
+## Phase 2: Frontend Migration — COMPLETE
 
 Ref: [PHASE_2_FRONTEND.md](./phases/PHASE_2_FRONTEND.md)
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 1 | Scaffold Vite React project in `client/` | — | |
-| 2 | Install Tailwind CSS, Recharts | — | |
-| 3 | Decompose prototype into component tree | — | Source: `private_credit_crisis_dashboard.jsx` |
-| 4 | Replace hardcoded data with `useDashboardData` hook | — | |
-| 5 | Add loading states, error handling | — | |
-| 6 | Add manual refresh button in header | — | |
-| 7 | Add `StatusBar` showing last refresh time | — | |
-| 8 | Add Vite proxy config for `/api` → Express | — | |
-| 9 | Port dark theme color system to Tailwind config | — | |
-| 10 | Test: full dashboard renders from API data | — | |
+| 1 | Scaffold Vite React project in `client/` | DONE | Vite 6 + React 18, `client/package.json` |
+| 2 | Install Tailwind CSS, Recharts | DONE | Tailwind v3 + PostCSS + autoprefixer, recharts 2.x |
+| 3 | Decompose prototype into component tree | DONE | 17 components across 6 dirs (shared, layout, overview, redemptions, contagion, timeline) |
+| 4 | Replace hardcoded data with `useDashboardData` hook | DONE | `hooks/useDashboardData.js` — auto-polls every 5 min |
+| 5 | Add loading states, error handling | DONE | `LoadingSpinner.jsx`, error state with retry in `App.jsx` |
+| 6 | Add manual refresh button in header | DONE | `Header.jsx` — shows spinning indicator during refresh |
+| 7 | Add `StatusBar` showing last refresh time | DONE | `StatusBar.jsx` — data source + relative time |
+| 8 | Add Vite proxy config for `/api` → Express | DONE | `vite.config.js` proxy to localhost:3001 |
+| 9 | Port dark theme color system to Tailwind config | DONE | `tailwind.config.js` — `vault` color palette matching prototype COLORS |
+| 10 | Test: full dashboard renders from API data | DONE | All 4 tabs visually verified via preview: Overview, Redemptions, Contagion, Timeline |
+
+**Files created:**
+```
+client/
+├── package.json
+├── vite.config.js
+├── tailwind.config.js
+├── postcss.config.js
+├── index.html
+├── src/
+│   ├── main.jsx
+│   ├── App.jsx
+│   ├── styles/globals.css
+│   ├── lib/
+│   │   ├── api.js
+│   │   ├── constants.js
+│   │   └── formatters.js
+│   ├── hooks/
+│   │   └── useDashboardData.js
+│   └── components/
+│       ├── shared/
+│       │   ├── Card.jsx
+│       │   ├── ChartTooltip.jsx
+│       │   ├── LoadingSpinner.jsx
+│       │   └── StatusBadge.jsx
+│       ├── layout/
+│       │   ├── Header.jsx
+│       │   ├── TabNavigation.jsx
+│       │   └── StatusBar.jsx
+│       ├── overview/
+│       │   ├── StatGrid.jsx
+│       │   ├── DefaultRateChart.jsx
+│       │   ├── SectorExposure.jsx
+│       │   ├── PIKTrend.jsx
+│       │   └── MaturityWall.jsx
+│       ├── redemptions/
+│       │   ├── FundScorecard.jsx
+│       │   ├── RedemptionRateChart.jsx
+│       │   └── DollarFlowChart.jsx
+│       ├── contagion/
+│       │   ├── TransmissionChain.jsx
+│       │   ├── BankExposure.jsx
+│       │   └── AltManagerEquity.jsx
+│       └── timeline/
+│           ├── SeverityChart.jsx
+│           └── EventLog.jsx
+```
+
+**Notes:**
+- Tailwind v4 / `@tailwindcss/vite` had peer dep conflict with Vite 6 — used Tailwind v3 + PostCSS instead
+- `preview_click` CSS selectors don't reliably trigger React synthetic events — used `dispatchEvent` via eval for tab navigation testing
+- Build compiles cleanly: 597 modules, ~596KB bundle
 
 ---
 
@@ -181,3 +233,8 @@ Cross-ref: [PHASE_1_FOUNDATION.md](./phases/PHASE_1_FOUNDATION.md) → Seed Data
 | 2026-03-12 | PLAN_STATUS.md created | — |
 | 2026-03-12 | Docs split: ARCHITECTURE.md + 6 phase files created, PLAN_STATUS.md moved to docs/ | — |
 | 2026-03-12 | CLAUDE.md created: project guidance, conventions, testing philosophy, doc standards | — |
+| 2026-03-12 | Phase 2 complete: Vite + React + Tailwind + Recharts, 17 components, all 4 tabs verified | 2 |
+| 2026-03-12 | Chart legend fix: DefaultRateChart + RedemptionRateChart — custom legends with heat-map color scale swatches | 2 |
+| 2026-03-12 | RedemptionRateChart Cell coloring changed from hardcoded index to data-driven (based on requested rate vs gate) | 2 |
+| 2026-03-12 | Status taxonomy expanded: added `extraordinary` status for funds that met requests via unsustainable emergency measures (e.g., BCRED $400M backstop). Updated StatusBadge, seed data, ARCHITECTURE.md | 1,2 |
+| 2026-03-12 | Dev workflow fix: `npm run dev` now starts both Express (:3001) + Vite (:5173) via `concurrently`. Express no longer serves `client/dist` in dev mode — prevents stale builds from masking frontend changes. Added `concurrently` devDep. Updated CLAUDE.md dev commands. | 1,2 |

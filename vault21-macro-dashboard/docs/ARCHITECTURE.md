@@ -151,7 +151,13 @@ vault21-macro-dashboard/
 - `id`, `name`, `ticker`, `manager`, `aum_billions`, `fund_type` (BDC, interval_fund, semi_liquid), `created_at`
 
 **redemption_events** — Per-fund quarterly redemption data
-- `id`, `fund_id` (FK → funds), `quarter`, `date`, `redemption_requested_pct`, `redemption_requested_amt`, `redemption_paid_pct`, `redemption_paid_amt`, `gate_threshold_pct` (default 5.0), `status` (fulfilled/gated/liquidating/pending), `response_detail`, `source`, `created_at`
+- `id`, `fund_id` (FK → funds), `quarter`, `date`, `redemption_requested_pct`, `redemption_requested_amt`, `redemption_paid_pct`, `redemption_paid_amt`, `gate_threshold_pct` (default 5.0), `status` (fulfilled/extraordinary/gated/liquidating/pending), `response_detail`, `source`, `created_at`
+- **Status taxonomy:**
+  - `fulfilled` — Met all requests within normal operating parameters
+  - `extraordinary` — Technically met requests but required emergency measures (raised tender caps, firm capital injection, etc.) — not repeatable at scale. This is itself a severity signal.
+  - `gated` — Invoked quarterly redemption cap, partial fulfillment only
+  - `liquidating` — Permanently gated, entering wind-down
+  - `pending` — Quarter not yet complete
 
 **metrics** — Time-series key metrics
 - `id`, `date`, `metric_name`, `metric_value`, `unit` (percent, billions_usd, ratio, index), `source`, `created_at`
@@ -230,7 +236,7 @@ Full SQL: `server/db/schema.sql`
     "maturity_wall": [{ "year": "2026", "amount": 162 }]
   },
   "redemptions": {
-    "funds": [{ "name": "...", "aum_billions": 82, "status": "fulfilled", ... }],
+    "funds": [{ "name": "...", "aum_billions": 82, "status": "extraordinary", ... }],
     "rate_chart": [{ "fund": "BCRED", "requested": 7.9, "paid": 7.9 }],
     "dollar_flows": [{ "fund": "...", "requested": 3.8, "returned": 3.8 }]
   },

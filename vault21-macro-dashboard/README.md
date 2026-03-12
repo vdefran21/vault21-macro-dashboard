@@ -8,7 +8,7 @@ Real-time private credit crisis monitoring dashboard. Tracks the $1.8T private c
 cd vault21-macro-dashboard
 npm install
 npm run seed      # populate SQLite with historical data
-npm run dev       # start server on :3001 (nodemon)
+npm run dev       # start API server on :3001 and Vite client on :5173
 ```
 
 Verify it's running:
@@ -17,6 +17,8 @@ Verify it's running:
 curl http://localhost:3001/api/health
 curl http://localhost:3001/api/dashboard
 ```
+
+Open the dashboard at `http://localhost:5173` during development. Port `3001` is the backend API and status page.
 
 ## Project structure
 
@@ -97,7 +99,9 @@ The seed script populates all tables with data from the prototype JSX dashboard:
 ## Scripts
 
 ```bash
-npm run dev       # Development server with nodemon auto-reload
+npm run dev       # Starts backend (:3001) and Vite frontend (:5173)
+npm run dev:server # Backend only
+npm run dev:client # Frontend only
 npm start         # Production server
 npm run seed      # Re-seed database (clears and repopulates)
 npm run setup     # Install deps + seed in one step

@@ -7,6 +7,8 @@ function seed() {
   initSchema();
 
   // Clear existing data for clean re-seed
+  // Delete in FK-safe order (children before parents), then reset autoincrement counters
+  // so hardcoded fund_id references in redemption seeds remain valid across re-seeds.
   db.exec(`
     DELETE FROM redemption_events;
     DELETE FROM funds;
@@ -16,6 +18,7 @@ function seed() {
     DELETE FROM bank_exposures;
     DELETE FROM contagion_layers;
     DELETE FROM refresh_log;
+    DELETE FROM sqlite_sequence;
   `);
 
   // --- Timeline Events ---
@@ -32,7 +35,7 @@ function seed() {
     ['2026-02-01', 'Blue Owl gates OBDC II — 200%+ redemption surge', 4, 'gating', 'Bloomberg'],
     ['2026-02-18', 'Rubric Capital publishes "Enron of private credit" letter', 3, 'analyst_warning', 'Rubric Capital'],
     ['2026-02-27', 'UK lender MFS collapses — Barclays exposure flagged', 4, 'bankruptcy', 'FT'],
-    ['2026-03-03', 'Blackstone BCRED: 7.9% redemptions / $3.8B outflows', 5, 'redemption', 'Bloomberg'],
+    ['2026-03-03', 'Blackstone BCRED: 7.9% redemptions met via emergency $400M firm backstop + raised tender cap', 5, 'redemption', 'Bloomberg'],
     ['2026-03-06', 'BlackRock HLEND gated at 5% — $1.2B requested, $620M paid', 5, 'gating', 'Reuters'],
     ['2026-03-06', 'Alt manager selloff: OWL -12%, BX -8% / VIX +32%', 5, 'market_move', 'Bloomberg'],
     ['2026-03-10', 'Cliffwater $33B fund reports >7% redemption requests', 5, 'redemption', 'CNBC'],
@@ -77,7 +80,7 @@ function seed() {
   `);
 
   const redemptions = [
-    [1, 'Q1 2026', '2026-03-03', 7.9, 3.8, 7.9, 3.8, 5.0, 'fulfilled', 'Met 100% of redemption requests'],
+    [1, 'Q1 2026', '2026-03-03', 7.9, 3.8, 7.9, 3.8, 5.0, 'extraordinary', 'Met 7.9% via increased tender offer (5%→7%) + $400M firm/employee capital injection. Standard cap is 5%. Not repeatable at scale.'],
     [2, 'Q1 2026', '2026-03-06', 9.3, 1.2, 5.0, 0.62, 5.0, 'gated', 'Gated at 5% quarterly cap — $620M of $1.2B paid'],
     [3, 'Q1 2026', '2026-03-10', 7.0, 2.31, 5.0, 1.65, 5.0, 'gated', 'Expected >7% requests, 5% cap applied'],
     [4, 'Q1 2026', '2026-02-01', 200.0, null, 0, 0, 5.0, 'liquidating', 'Permanently gated — 200%+ redemption surge — entering liquidation'],

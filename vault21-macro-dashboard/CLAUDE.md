@@ -39,15 +39,15 @@ data/                SQLite database file (gitignored)
 ## Development Commands
 
 ```bash
-npm install           # Install dependencies
+npm install           # Install dependencies (root + client)
 npm run seed          # Seed SQLite with historical data (clears and repopulates)
-npm run dev           # Start Express server with nodemon (port 3001)
-npm start             # Production server
+npm run dev           # Start both Express (:3001) + Vite (:5173) via concurrently
+npm run dev:server    # Express only (nodemon, port 3001)
+npm run dev:client    # Vite only (port 5173, proxies /api → :3001)
+npm start             # Production server (serves client/dist)
 npm run setup         # Install + seed in one step
 
-# Frontend (when built)
-cd client && npm run dev    # Vite dev server with /api proxy to :3001
-cd client && npm run build  # Production build (served by Express)
+cd client && npm run build  # Production build (served by Express in production only)
 ```
 
 ## Architecture Decisions (Locked)
